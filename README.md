@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="FDE + DevOps + GenAI Roadmap" width="100%">
+</p>
+
 # FDE + DevOps + GenAI Roadmap
 
 A learning-and-building roadmap for becoming a **Forward Deployed Engineer (FDE)** with a strong DevOps/platform base and applied GenAI/agent skills. Every course module is paired with something you build, so the repo doubles as a portfolio.
@@ -8,7 +12,12 @@ A learning-and-building roadmap for becoming a **Forward Deployed Engineer (FDE)
 - Principle: **AI proposes, people and policy decide.** Read-only first, approvals before changes.
 
 ## The big picture
-![AI for DevOps: animated diagram from AI to agents, plus MLOps, LLMOps, AgentOps and the DevOps foundation](assets/aiops-ai-for-devops.gif)
+
+<a href="assets/aiops-wallpaper-preview.png">
+  <img src="assets/aiops-ai-for-devops.gif" alt="AI for DevOps: animated diagram from AI to agents, plus MLOps, LLMOps, AgentOps and the DevOps foundation" width="100%">
+</a>
+
+<sub>Click the diagram to open the full-resolution still.</sub>
 
 An animated version lives in [docs/aiops](docs/aiops/README.md).
 

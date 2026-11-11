@@ -13,6 +13,7 @@ GitHub shows images, GIFs and videos, but it never runs JavaScript from files in
 | 4K video (12 s loop) | `ai-for-devops-live-4k.mp4` | Presentations, social posts, video wallpaper |
 | Live HTML | `ai-for-devops-live-wallpaper.html` | Browser, GitHub Pages, webpage wallpaper apps |
 | Still image | `assets/aiops-wallpaper-preview.png` | Fallback and link previews |
+| Header banner | `assets/banner.png` | Top of the main README |
 
 ## View it live
 - **Locally:** download the file and open it in a browser. It scales to any screen size.
