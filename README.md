@@ -8,7 +8,7 @@ A learning-and-building roadmap for becoming a **Forward Deployed Engineer (FDE)
 - Principle: **AI proposes, people and policy decide.** Read-only first, approvals before changes.
 
 ## The big picture
-![AI for DevOps: from AI to agents, plus MLOps, LLMOps, AgentOps and the DevOps foundation](assets/aiops-wallpaper-preview.png)
+![AI for DevOps: animated diagram from AI to agents, plus MLOps, LLMOps, AgentOps and the DevOps foundation](assets/aiops-ai-for-devops.gif)
 
 An animated version lives in [docs/aiops](docs/aiops/README.md).
 

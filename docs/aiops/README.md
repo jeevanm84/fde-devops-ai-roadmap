@@ -1,8 +1,18 @@
 # AIOps map
 
-![AI for DevOps live wallpaper preview](../../assets/aiops-wallpaper-preview.png)
+![AI for DevOps animated diagram](../../assets/aiops-ai-for-devops.gif)
 
 [`ai-for-devops-live-wallpaper.html`](ai-for-devops-live-wallpaper.html) is a single self-contained, animated diagram (no external scripts or fonts). It shows how AI, machine learning, deep learning, generative AI and agents nest inside each other, how MCP connects an agent to tools, how AI systems are run in production, and where DevOps and the FDE role sit.
+
+## Why the repo image moves, but the HTML file does not
+GitHub shows images, GIFs and videos, but it never runs JavaScript from files in a repo. So the animation here is a looping GIF made from the HTML. The HTML itself only animates when opened in a browser or served through GitHub Pages.
+
+| Format | File | Use |
+|---|---|---|
+| Animated GIF | `assets/aiops-ai-for-devops.gif` | Shown in the READMEs |
+| 4K video (12 s loop) | `ai-for-devops-live-4k.mp4` | Presentations, social posts, video wallpaper |
+| Live HTML | `ai-for-devops-live-wallpaper.html` | Browser, GitHub Pages, webpage wallpaper apps |
+| Still image | `assets/aiops-wallpaper-preview.png` | Fallback and link previews |
 
 ## View it live
 - **Locally:** download the file and open it in a browser. It scales to any screen size.
