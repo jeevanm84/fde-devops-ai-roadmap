@@ -1,0 +1,271 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI for DevOps — live wallpaper</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b0f17}
+body{font-family:Inter,"Segoe UI",-apple-system,"Helvetica Neue",sans-serif;color:#e6e8ee}
+#frame{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;
+ background:
+  radial-gradient(900px 600px at 15% 10%, rgba(127,119,221,.10), transparent 60%),
+  radial-gradient(900px 700px at 90% 85%, rgba(29,158,117,.09), transparent 60%),
+  radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0) 0 0/28px 28px,
+  #0b0f17;}
+.manual *{transition:none!important}
+#fx{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:5}
+.mono{font-family:"Cascadia Code","SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
+.stage{position:absolute;left:120px;top:125px;width:1680px}
+.title{display:flex;align-items:baseline;gap:18px;margin-bottom:22px}
+.title h1{font-size:30px;font-weight:700;letter-spacing:-.5px}
+.title h1 span{color:#9b94ff}
+.title p{font-size:16px;color:#8a90a2}
+.live{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13.5px;color:#9aa1b3;border:1px solid #2a3040;border-radius:999px;padding:6px 14px;background:rgba(255,255,255,.02);min-width:470px}
+.live .dot{width:9px;height:9px;border-radius:50%;background:#5dcaa5;box-shadow:0 0 10px #5dcaa5}
+.live b{color:#5dcaa5;font-weight:600;letter-spacing:1px}
+#ticker{color:#cfd3dd}
+.main{display:grid;grid-template-columns:1150px 1fr;gap:36px}
+.lvl{border:1.5px solid;border-radius:22px;padding:14px 22px 20px}
+.hd{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+.hd b{font-size:21px;font-weight:650}
+.hd i{font-style:normal;font-size:14.5px;opacity:.75}
+.ai{border-color:#5f6472;background:rgba(255,255,255,.02)}
+.ai>.hd b{color:#f1f2f5}
+.ml{border-color:#4a7bbf;background:rgba(55,138,221,.05)} .ml>.hd{color:#85b7eb}
+.dl{border-color:#6f66d6;background:rgba(127,119,221,.07)} .dl>.hd{color:#afa9ec}
+.gen{border-color:#1d9e75;background:rgba(29,158,117,.07)} .gen>.hd{color:#5dcaa5}
+.models{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.card{border:1.2px solid rgba(93,202,165,.55);border-radius:14px;padding:11px 14px;text-align:center;background:rgba(10,30,25,.35);transition:box-shadow .4s,border-color .4s}
+.card b{display:block;font-size:17px;font-weight:600;color:#9fe1cb}
+.card span{font-size:13.5px;color:#7fbfa9}
+.card.on{border-color:#5dcaa5;box-shadow:0 0 18px rgba(93,202,165,.35)}
+.agent{border:1.5px solid #d85a30;border-radius:18px;background:rgba(216,90,48,.08);padding:14px 18px 16px}
+.agent>.hd{color:#f0997b;margin-bottom:10px}
+.agrid{display:grid;grid-template-columns:1fr 130px 250px;gap:14px;align-items:stretch}
+.core{display:flex;flex-direction:column;gap:10px}
+.brain{border:1.2px solid rgba(240,153,123,.6);border-radius:12px;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;background:rgba(40,15,8,.35);gap:12px}
+.brain b{font-size:16px;color:#f5c4b3;white-space:nowrap}.brain span{font-size:12.5px;color:#f0b8a2;white-space:nowrap;overflow:hidden}
+.loop{display:flex;align-items:center;gap:6px}
+.step{flex:1;border:1px solid rgba(240,153,123,.45);border-radius:10px;padding:7px 4px;text-align:center;background:rgba(40,15,8,.25);transition:box-shadow .35s,border-color .35s,background .35s}
+.step b{display:block;font-size:14px;color:#f5c4b3}.step span{font-size:11.5px;color:#c99482}
+.step.on{border-color:#ff8a5c;background:rgba(216,90,48,.25);box-shadow:0 0 18px rgba(255,138,92,.45)}
+.arr{color:#f0997b;font-size:16px;opacity:.5}
+.ret{font-size:12px;color:#c99482;text-align:center;margin-top:-2px}
+.sup{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip{border:1px dashed rgba(240,153,123,.5);border-radius:10px;padding:7px 10px;font-size:13px;color:#e8b7a5;transition:box-shadow .4s,border-color .4s}
+.chip b{color:#f5c4b3;font-weight:600}
+.chip.on{border-color:#f5c4b3;box-shadow:0 0 14px rgba(245,196,179,.3)}
+.mcp{border:1.5px solid #ef9f27;border-radius:14px;background:rgba(239,159,39,.10);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px;transition:box-shadow .3s}
+.mcp b{font-size:24px;font-weight:700;color:#fac775;letter-spacing:1px}
+.mcp span{font-size:12px;color:#d9a85a;line-height:1.35;margin-top:4px}
+.mcp.on{box-shadow:0 0 26px rgba(239,159,39,.45)}
+.tools{border:1px solid rgba(239,159,39,.45);border-radius:14px;padding:10px 12px;background:rgba(40,28,8,.3)}
+.tools h4{font-size:13px;font-weight:600;color:#fac775;margin-bottom:8px}
+.tg{display:flex;flex-wrap:wrap;gap:6px}
+.tg span{font-size:12.5px;border:1px solid rgba(239,159,39,.35);border-radius:999px;padding:3px 9px;color:#f0cf95;transition:all .3s}
+.tg span.on{border-color:#fac775;background:rgba(239,159,39,.28);color:#fff3dc;box-shadow:0 0 14px rgba(250,199,117,.5)}
+.side{display:flex;flex-direction:column;gap:14px}
+.side h3{font-size:15px;font-weight:600;color:#8a90a2;letter-spacing:1.5px;text-transform:uppercase;margin:4px 0 0 4px}
+.op{flex:1;display:flex;flex-direction:column;justify-content:center;border:1.5px solid;border-radius:16px;padding:12px 16px;background:rgba(255,255,255,.02)}
+.op .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.op b{font-size:20px;font-weight:650}
+.tag{font-size:11.5px;border-radius:999px;padding:3px 9px;border:1px solid}
+.op p{font-size:13.5px;color:#aab0bf;line-height:1.45}
+.op .bot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px;gap:10px}
+.op small{font-size:12px;color:#7d8495}
+.metric{display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a90a2}
+.metric em{font-style:normal;color:#dfe3ea;min-width:46px;text-align:right}
+.metric svg{width:130px;height:30px}
+.o1{border-color:#4a7bbf}.o1 b{color:#85b7eb}.o1 .tag{color:#85b7eb;border-color:#4a7bbf}
+.o2{border-color:#1d9e75}.o2 b{color:#5dcaa5}.o2 .tag{color:#5dcaa5;border-color:#1d9e75}
+.o3{border-color:#d85a30}.o3 b{color:#f0997b}.o3 .tag{color:#f0997b;border-color:#d85a30}
+.fde{flex:1;display:flex;flex-direction:column;justify-content:center;border:1.5px solid #d4537e;border-radius:16px;padding:13px 16px;background:rgba(212,83,126,.07)}
+.fde b{font-size:20px;color:#ed93b1}.fde p{font-size:13.5px;color:#c9a3b2;line-height:1.45;margin-top:4px}
+.devops{position:relative;margin-top:22px;border:1.5px solid #378add;border-radius:18px;background:rgba(55,138,221,.08);padding:14px 22px;display:flex;align-items:center;gap:26px}
+.devops b{font-size:21px;color:#b5d4f4;white-space:nowrap}
+.devops i{font-style:normal;font-size:14px;color:#85b7eb;white-space:nowrap}
+.dg{display:flex;gap:10px;flex-wrap:wrap;margin-left:auto}
+.dg span{font-size:13.5px;border:1px solid rgba(133,183,235,.45);border-radius:999px;padding:5px 12px;color:#cfe2f7;transition:all .3s}
+.dg span.on{border-color:#b5d4f4;background:rgba(55,138,221,.3);box-shadow:0 0 14px rgba(133,183,235,.45);color:#fff}
+</style></head><body>
+<div id="frame">
+<div class="stage">
+ <div class="title"><h1>AI for <span>DevOps</span></h1><p>From artificial intelligence to agents that operate your infrastructure</p>
+  <div class="live"><span class="dot" id="ldot"></span><b>LIVE</b><span id="ticker" class="mono"></span></div></div>
+ <div class="main">
+  <div class="lvl ai" id="aiBox"><div class="hd"><b>Artificial intelligence</b><i>Machines mimicking human reasoning</i></div>
+   <div class="lvl ml"><div class="hd"><b>Machine learning</b><i>Learns patterns from data · anomaly detection, forecasting</i></div>
+    <div class="lvl dl"><div class="hd"><b>Deep learning</b><i>Artificial neural networks, many layers</i></div>
+     <div class="lvl gen"><div class="hd"><b>Generative AI</b><i>Creates new content from a prompt</i></div>
+      <div class="models">
+       <div class="card" id="mText"><b>Text based</b><span>LLMs · Claude, GPT, Llama</span></div>
+       <div class="card"><b>Image based</b><span>Diffusion models</span></div>
+       <div class="card"><b>Multimodal</b><span>Text + image + audio</span></div>
+      </div>
+      <div class="agent" id="agent"><div class="hd"><b>Agentic AI</b><i>LLM brain + tools + memory + a goal, running in a loop</i></div>
+       <div class="agrid">
+        <div class="core" id="core">
+         <div class="brain"><b>LLM brain</b><span id="thought" class="mono">reasons &amp; plans the next step</span></div>
+         <div class="loop">
+          <div class="step" id="s0"><b>Perceive</b><span>alerts, logs</span></div><div class="arr">→</div>
+          <div class="step" id="s1"><b>Reason</b><span>plan steps</span></div><div class="arr">→</div>
+          <div class="step" id="s2"><b>Act</b><span>call tools</span></div><div class="arr">→</div>
+          <div class="step" id="s3"><b>Observe</b><span>verify result</span></div>
+         </div>
+         <div class="ret">↻ repeats until resolved, or hands off to a human</div>
+         <div class="sup">
+          <div class="chip" id="cMem"><b>Memory / RAG</b> · runbooks, past RCAs</div>
+          <div class="chip" id="cGuard"><b>Guardrails</b> · RBAC, human approval</div>
+         </div>
+        </div>
+        <div class="mcp" id="mcp"><b>MCP</b><span>Model Context Protocol<br>one standard plug<br>agent ⇄ tools</span></div>
+        <div class="tools" id="tools"><h4>Tools via MCP servers</h4>
+         <div class="tg mono" id="tg"><span>kubectl</span><span>terraform</span><span>aws cli</span><span>github</span><span>jenkins</span><span>prometheus</span><span>grafana</span><span>slack</span><span>jira</span></div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="side">
+   <h3>Run it in production</h3>
+   <div class="op o1" id="op1"><div class="top"><b>MLOps</b><span class="tag">ML models</span></div>
+    <p>Data → train → evaluate → register → deploy → monitor drift → retrain</p>
+    <div class="bot"><small class="mono">MLflow · SageMaker · Kubeflow</small><div class="metric">drift<svg id="sp1"></svg><em id="v1"></em></div></div></div>
+   <div class="op o2" id="op2"><div class="top"><b>LLMOps</b><span class="tag">Gen AI</span></div>
+    <p>Prompt versioning, evals in CI, token cost &amp; latency, hallucination checks</p>
+    <div class="bot"><small class="mono">Bedrock · LangSmith</small><div class="metric">tokens/s<svg id="sp2"></svg><em id="v2"></em></div></div></div>
+   <div class="op o3" id="op3"><div class="top"><b>AgentOps</b><span class="tag">Agents</span></div>
+    <p>Trace every tool call, guardrails, approvals before writes, audit trail</p>
+    <div class="bot"><small class="mono">MCP · OpenTelemetry · IAM</small><div class="metric">calls/min<svg id="sp3"></svg><em id="v3"></em></div></div></div>
+   <div class="fde" id="fde"><b>FDE</b><p>Forward deployed engineer: takes the whole stack to the customer and ships it in their environment</p></div>
+  </div>
+ </div>
+ <div class="devops" id="devops"><b>DevOps &amp; platform engineering</b><i>The foundation under every layer</i>
+  <div class="dg" id="dg"><span>CI/CD</span><span>Kubernetes</span><span>Terraform / IaC</span><span>Observability</span><span>GitOps</span><span>AWS · Azure · GCP</span><span>Security &amp; IAM</span></div></div>
+</div>
+<svg id="fx" viewBox="0 0 1920 1080"></svg>
+</div>
+<script>
+(function(){
+const T=12;                               // loop period in seconds (seamless)
+const frame=document.getElementById('frame'), fx=document.getElementById('fx');
+const NS='http://www.w3.org/2000/svg';
+let S=1, fr={left:0,top:0};
+function fit(){
+  const w=innerWidth,h=innerHeight; S=Math.max(w/1920,h/1080);
+  frame.style.transform='scale('+S+')';
+  frame.style.left=((w-1920*S)/2)+'px'; frame.style.top=((h-1080*S)/2)+'px';
+}
+function R(el){const r=el.getBoundingClientRect(), f=frame.getBoundingClientRect();
+  return {l:(r.left-f.left)/S,t:(r.top-f.top)/S,r:(r.right-f.left)/S,b:(r.bottom-f.top)/S,
+          cx:((r.left+r.right)/2-f.left)/S,cy:((r.top+r.bottom)/2-f.top)/S};}
+const $=id=>document.getElementById(id);
+let flows=[];
+function mk(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||fx).appendChild(e);return e;}
+function addFlow(d,color,opt){
+  opt=Object.assign({n:3,speed:1,r:3.2,track:.18,phase:null,dir:1,dash:'3 5'},opt||{});
+  const p=mk('path',{d,fill:'none',stroke:color,'stroke-width':1.2,'stroke-opacity':opt.track,'stroke-dasharray':opt.dash});
+  const len=p.getTotalLength(); const dots=[];
+  for(let i=0;i<opt.n;i++){
+    const tr=[]; for(let k=5;k>=1;k--) tr.push(mk('circle',{r:opt.r*(1-k*.13),fill:color,opacity:0}));
+    const g=mk('circle',{r:opt.r*3,fill:color,opacity:.25});
+    const c=mk('circle',{r:opt.r,fill:'#fff'});
+    c.setAttribute('stroke',color); c.setAttribute('stroke-width',opt.r*.7);
+    dots.push([g,c,tr]);
+  }
+  flows.push({p,len,dots,opt});
+}
+function build(){
+  fx.innerHTML=''; flows=[];
+  const s=[0,1,2,3].map(i=>R($('s'+i)));
+  // agent loop arrows
+  for(let i=0;i<3;i++){const y=s[i].cy; addFlow(`M${s[i].r+2} ${y} L${s[i+1].l-2} ${y}`,'#ff9d73',{n:1,speed:2,r:3.2,track:.25});}
+  // return path under the loop
+  const yb=s[0].b+5;
+  addFlow(`M${s[3].cx} ${s[3].b} L${s[3].cx} ${yb} L${s[0].cx} ${yb} L${s[0].cx} ${s[0].b}`,'#ff9d73',{n:4,speed:1,r:3,track:.35});
+  // core <-> MCP <-> tools (requests out, responses back)
+  const core=R($('core')), mcp=R($('mcp')), tools=R($('tools'));
+  const yq=mcp.cy-10, ya=mcp.cy+10;
+  addFlow(`M${core.r} ${yq} L${mcp.l} ${yq}`,'#fac775',{n:2,speed:2,r:3.4,track:.4,phase:'act'});
+  addFlow(`M${mcp.r} ${yq} L${tools.l} ${yq}`,'#fac775',{n:2,speed:2,r:3.4,track:.4,phase:'act'});
+  addFlow(`M${tools.l} ${ya} L${mcp.r} ${ya}`,'#9fe1cb',{n:2,speed:2,r:3.4,track:.4,phase:'obs'});
+  addFlow(`M${mcp.l} ${ya} L${core.r} ${ya}`,'#9fe1cb',{n:2,speed:2,r:3.4,track:.4,phase:'obs'});
+  // LLM model card feeds the agent
+  const mt=R($('mText')), ag=R($('agent'));
+  addFlow(`M${mt.cx} ${mt.b} L${mt.cx} ${ag.t}`,'#5dcaa5',{n:1,speed:1,r:3.4,track:.5});
+  // AI stack -> ops cards (telemetry)
+  const ai=R($('aiBox'));
+  ['op1','op2','op3'].forEach((id,i)=>{const o=R($(id)); const c=['#85b7eb','#5dcaa5','#f0997b'][i];
+    addFlow(`M${ai.r} ${o.cy} L${o.l} ${o.cy}`,c,{n:1,speed:1,r:3.4,track:.45});});
+  // DevOps foundation -> up into the AI stack and FDE
+  const dv=R($('devops')), fde=R($('fde'));
+  [ai.l+180, ai.l+560, ai.l+940].forEach(x=>addFlow(`M${x} ${dv.t} L${x} ${ai.b}`,'#85b7eb',{n:1,speed:1,r:3,track:.4}));
+  addFlow(`M${fde.cx} ${dv.t} L${fde.cx} ${fde.b}`,'#ed93b1',{n:1,speed:1,r:3,track:.4});
+  // CI/CD pipeline running along the bottom of the DevOps bar
+  addFlow(`M${dv.l+24} ${dv.b-7} L${dv.r-24} ${dv.b-7}`,'#b5d4f4',{n:6,speed:1,r:2.8,track:.18,dash:'2 6'});
+  // sparkline paths
+  ['sp1','sp2','sp3'].forEach((id,i)=>{const sv=$(id); sv.setAttribute('viewBox','0 0 130 30'); sv.innerHTML='';
+    const c=['#85b7eb','#5dcaa5','#f0997b'][i];
+    mk('path',{fill:c,'fill-opacity':.12,stroke:'none'},sv); mk('path',{fill:'none',stroke:c,'stroke-width':1.5},sv);
+    mk('circle',{r:2.4,fill:c},sv);});
+}
+const steps=[0,1,2,3].map(i=>$('s'+i));
+const chips=[...$('tg').children], dchips=[...$('dg').children];
+const story=[
+ ['5xx spike · payments-svc','alert: 5xx > 4% on payments-svc'],
+ ['kubectl logs → DB conn refused','plan: check pods, deploys, logs'],
+ ['helm rollback payments-svc 41','act: rollback via MCP (approved)'],
+ ['error rate 0.2% ✓ RCA drafted','observe: recovered · writing RCA'],
+];
+const toolSeq=[[0,5,6],[0,3,4],[0,1,7],[5,6,8]];
+function series(i,u){ // periodic in u over [0,1)
+  const k=[[2,5,9],[3,4,11],[1,6,13]][i]; const a=2*Math.PI*u;
+  return .5+.22*Math.sin(k[0]*a+i)+.14*Math.sin(k[1]*a+2*i)+.08*Math.sin(k[2]*a+.5);
+}
+function frameAt(t){
+  const u=(t%T)/T; const ph=Math.floor(u*4); const pu=(u*4)%1;
+  steps.forEach((e,i)=>e.classList.toggle('on',i===ph));
+  $('thought').textContent=story[ph][1];
+  $('ticker').textContent=story[ph][0];
+  $('ldot').style.opacity=.45+.55*Math.abs(Math.cos(Math.PI*u*12));
+  $('mcp').classList.toggle('on',ph===2||ph===3);
+  $('cMem').classList.toggle('on',ph===1);
+  $('cGuard').classList.toggle('on',ph===2&&pu<.5);
+  $('mText').classList.toggle('on',ph===1);
+  const seq=toolSeq[ph]; const ti=seq[Math.min(seq.length-1,Math.floor(pu*seq.length))];
+  chips.forEach((c,i)=>c.classList.toggle('on',(ph===2||ph===0||ph===3||ph===1)&&i===ti&&pu>.15));
+  const di=Math.floor(u*dchips.length*2)%dchips.length;
+  dchips.forEach((c,i)=>c.classList.toggle('on',i===di));
+  flows.forEach(f=>{
+    const o=f.opt; let active=true;
+    if(o.phase==='act') active=ph===2; if(o.phase==='obs') active=ph===3;
+    f.dots.forEach(([g,c,tr],i)=>{
+      let q=((u*o.speed*(o.phase?4:1))+i/o.n)%1;
+      const pt=f.p.getPointAtLength(q*f.len);
+      const fade=Math.min(1,q*8,(1-q)*8)*(active?1:0);
+      c.setAttribute('cx',pt.x);c.setAttribute('cy',pt.y);c.setAttribute('opacity',fade);
+      g.setAttribute('cx',pt.x);g.setAttribute('cy',pt.y);g.setAttribute('opacity',.28*fade);
+      const step=Math.min(.035,14/f.len);
+      tr.forEach((e,k)=>{const kk=5-k; const qq=q-kk*step; if(qq<0){e.setAttribute('opacity',0);return;}
+        const pp=f.p.getPointAtLength(qq*f.len); e.setAttribute('cx',pp.x); e.setAttribute('cy',pp.y);
+        e.setAttribute('opacity',fade*(.55-kk*.09));});
+    });
+  });
+  // sparklines scroll seamlessly
+  const fmt=[v=>(v*0.3).toFixed(3),v=>Math.round(800+v*900),v=>Math.round(20+v*60)];
+  [1,2,3].forEach(n=>{const sv=$('sp'+n); if(!sv.children.length)return; const i=n-1; let d='';
+    const N=40; for(let j=0;j<=N;j++){const x=j/N*130; const v=series(i,(j/N*0.5+u)%1); d+=(j?'L':'M')+x.toFixed(1)+' '+(28-v*26).toFixed(1);}
+    sv.children[1].setAttribute('d',d); sv.children[0].setAttribute('d',d+' L130 30 L0 30 Z');
+    const vl=series(i,(0.5+u)%1); sv.children[2].setAttribute('cx',130); sv.children[2].setAttribute('cy',28-vl*26);
+    $('v'+n).textContent=fmt[i](vl);});
+}
+window.__frame=t=>{document.body.classList.add('manual');frameAt(t);};
+function loop(){ if(window.__manual) return; frameAt(performance.now()/1000); requestAnimationFrame(loop); }
+fit(); build();
+addEventListener('resize',()=>{fit();build();});
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{build();loop();});
+})();
+</script>
+</body></html>

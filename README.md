@@ -7,11 +7,17 @@ A learning-and-building roadmap for becoming a **Forward Deployed Engineer (FDE)
 - Cloud bias: AWS first (Bedrock, ECR, CodeBuild, EKS/kOps), then compare Azure and GCP
 - Principle: **AI proposes, people and policy decide.** Read-only first, approvals before changes.
 
+## The big picture
+![AI for DevOps: from AI to agents, plus MLOps, LLMOps, AgentOps and the DevOps foundation](assets/aiops-wallpaper-preview.png)
+
+An animated version lives in [docs/aiops](docs/aiops/README.md).
+
 ## How this repo works
 | Path | What it holds |
 |---|---|
 | [ROADMAP.md](ROADMAP.md) | 24-week plan: module -> build -> proof |
 | [docs/skill-ladder.md](docs/skill-ladder.md) | Zero-to-advanced DevOps ladder with self-check |
+| [docs/aiops/](docs/aiops/README.md) | AIOps map: live animated diagram, terminology, and how it ties to the projects |
 | [docs/fde-skills.md](docs/fde-skills.md) | Customer-facing FDE skills and a 2-week POC playbook |
 | [docs/interview-prep.md](docs/interview-prep.md) | FDE interview areas and practice prompts |
 | [PROGRESS.md](PROGRESS.md) | Checklist you tick as you go |
@@ -33,6 +39,7 @@ Copy `templates/project-template.md` into `projects/NN-name/README.md`, fill it 
 | 06 | Evals, tracing and guardrails | 9, 10 | planned |
 | 07 | Production deployment: Docker, K8s, CI/CD, LLMOps | 11, 12 | planned |
 | 08 | **Capstone**: MJ's Cart AI Ops Copilot | all | planned |
+| 09 | Anomaly detection and alert correlation (classic AIOps baseline, optional) | 12 | planned |
 
 ## Safety
 Never commit secrets, sensitive account IDs, or customer data. Use git-ignored `.env` files and short-lived credentials.

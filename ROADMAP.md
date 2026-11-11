@@ -16,6 +16,7 @@ Assumes about 8 to 10 hours per week on top of live classes. Follow your instruc
 ## Parallel tracks (every week)
 - **FDE track (2 hrs):** one customer-style scenario per week: discover, scope, demo. See [docs/fde-skills.md](docs/fde-skills.md).
 - **Write-up (1 hr):** a short blog or README section per project: problem, design, trade-offs, what failed.
+- **AIOps baseline (optional, weeks 16-19):** before trusting an LLM with alerts, build the classic version in [project 09](projects/09-anomaly-detection-alert-correlation/README.md) and compare. See [docs/aiops](docs/aiops/README.md).
 - **Interview drills (1 hr, from week 8):** AI system design, debugging, behavioral. See [docs/interview-prep.md](docs/interview-prep.md).
 
 ## Milestones
